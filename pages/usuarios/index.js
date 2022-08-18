@@ -1,99 +1,81 @@
 import React, { useEffect, useState } from "react"
-import { Container, Row, Col, Form, Alert, Spinner, Button, Modal } from 'react-bootstrap'
+import { Container, Row, Col, Form, Alert, Spinner, Modal } from 'react-bootstrap'
+
 import { ImPencil } from 'react-icons/im'
 import { BsFillTrashFill, BsKeyFill } from 'react-icons/bs'
-import { Pagination } from '@mui/material'
-const Usuarios = () => {
+import { MdOutlineAddCircle } from 'react-icons/md'
 
+import { TextField, Button } from '@mui/material'
+import DataTable from 'react-data-table-component'
+
+import AgregarUsuario from './agregarUsuario'
+const Usuarios = () => {
     /**
      * Modulo de usuarios
      */
-    const [paginas, setPaginas] = useState(0)
-    const [paginaSeleccionada, setPaginaSeleccionada] = useState(1)
     const [usuarios, setUsuarios] = useState([])
-    const [condicionUsuario, setCondicionUsuario] = useState(true)
     const cargarUsuarios = async () => {
-        const response = await fetch(`${process.env.URL}/api/usuarios/pruebas/${paginaSeleccionada}`)
+        const response = await fetch(`${process.env.URL}/api/usuarios/`)
         const data = await response.json()
-        setUsuarios(data.rows)
-        setPaginas(data.totalPaginas)
+        setUsuarios(data.message)
     }
+    const columns = [
+        {
+            name: '#',
+            selector: row => row.id,
+        },
+        {
+            name: 'Nro Documento',
+            selector: row => row.nroDoc,
+        },
+        {
+            name: 'Nombres',
+            selector: row => row.nombres,
+        },
+        {
+            name: 'Apellidos',
+            selector: row => row.apellidos,
+        },
+        {
+            name: 'Correo',
+            selector: row => row.correo,
+        },
+        {
+            name: 'Rol',
+            selector: row => row.rol,
+        },
+        {
+            name: 'Editar',
+            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalEditar(row.id) }}><ImPencil /></Button>
+        },
+        {
+            name: 'Eliminar',
+            selector: row => <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalEliminar(row.id) }}><BsFillTrashFill /></Button>
+        },
+        {
+            name: 'Contraseña',
+            selector: row => <Button variant="contained" color="success" size="small" onClick={() => { handleShowModalPassword(row.id) }}><BsKeyFill /></Button>
+        }
+    ]
     useEffect(() => {
         cargarUsuarios()
-    }, [condicionUsuario, paginaSeleccionada])
+    }, [])
     /** */
     /**
      * Modulo de busqueda
      */
     const [busqueda, setBusqueda] = useState('')
-    const usuariosFiltrado = usuarios.filter(element => {
-        return element.nombres.includes(busqueda) ||
-            element.apellidos.includes(busqueda) ||
-            element.correo.includes(busqueda) ||
-            element.rol.includes(busqueda)
+    const usuariosFiltrado = usuarios.filter(e => {
+        return e.nroDoc.includes(busqueda) ||
+            e.nombres.includes(busqueda) ||
+            e.apellidos.includes(busqueda) ||
+            e.correo.includes(busqueda) ||
+            e.rol.includes(busqueda)
     })
     const usuariosGeneral = busqueda.length > 0 ? usuariosFiltrado : usuarios
     /** */
-    /**
-     * Modulo de agregar
-     */
-    const [inputs, setInputs] = useState({})
-    const handleChange = (event) => {
-        const name = event.target.name
-        const value = event.target.value
-        setInputs(values => ({ ...values, [name]: value }))
-    }
-    const [responseAgregarUsuario, setResponseAgregarUsuario] = useState('')
-    const [spinnerAgregarUsuario, setSpinnerAgregarUsuario] = useState(false)
-    const AlertUsuarioString = () => {
-        return (
-            responseAgregarUsuario == '' ? (<></>) : (
-                <Alert variant={responseAgregarUsuario === 'Usuario agregado correctamente' ? `success` : 'warning'}>
-                    <Alert.Heading>Respuesta Servidor :</Alert.Heading>
-                    <b>*</b>{responseAgregarUsuario}
-                </Alert>
-            )
-        )
-    }
-    const AlertUsuarioArray = () => {
-        return (
-            <>
-                <Alert variant="danger">
-                    <Alert.Heading>Respuesta Servidor :</Alert.Heading>
-                    {responseAgregarUsuario.map((element, index) => (
-                        <span key={index} className="p-0 m-0" style={{ display: "block" }}><b>*</b>{element}</span>
-                    ))}
-                </Alert>
-            </>
-        )
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault()
-        setSpinnerAgregarUsuario(true)
-        fetch('http://localhost:3002/api/usuarios/', {
-            method: 'POST',
-            body: JSON.stringify(inputs), // data can be `string` or {object}!
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json())
-            .catch(error => console.error('Error:', error))
-            .then(response => {
-                console.log(JSON.stringify(response))
-                setSpinnerAgregarUsuario(false)
-                if (response.response) {
-                    setCondicionUsuario(!condicionUsuario)
-                    setInputs({})
-                    setResponseAgregarUsuario('Usuario agregado correctamente')
 
-                }
-                if (!response.response) {
-                    setResponseAgregarUsuario(response['message'])
 
-                }
-            })
-    }
-    /** */
     const [accion, setAccion] = useState('')
     /**
      * Modulo de eliminar
@@ -116,7 +98,6 @@ const Usuarios = () => {
         const response = await fetch(`${process.env.URL}api/usuarios/${idUsuarioeliminar.id}`, { method: 'PUT' })
         const data = await response.json()
         if (data.response) {
-            setCondicionUsuario(!condicionUsuario)
             handleCloseModalAcciones()
         }
     }
@@ -133,6 +114,10 @@ const Usuarios = () => {
     const handleShowModalPassword = (id) => {
         setAccion('password')
         setIdUsuarioEliminar(usuariosGeneral.find(element => { return element.id === id }))
+        setModalAcciones(true)
+    }
+    const handleShowModalAgregarUsuario = () => {
+        setAccion('agregar')
         setModalAcciones(true)
     }
     const [spinnerContrasena, setSpinnerContrasena] = useState(false)
@@ -191,7 +176,6 @@ const Usuarios = () => {
         const data = await response.json()
         setSpinnerEditar(false)
         setAlertEditar(data)
-        setCondicionUsuario(!condicionUsuario)
     }
     const AlertEditarArray = () => {
         return (
@@ -200,72 +184,31 @@ const Usuarios = () => {
             ))
         )
     }
-    const handleChangemarco = (event, value) => {
-        setBusqueda('')
-        setPaginaSeleccionada(value)
+    const styleButton = {
+        "& .MuiOutlinedInput-root:hover": {
+            "& > fieldset": {
+                borderColor: "#2A427B",
+            }
+        }
     }
     return (
         <>
             <Container>
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
-                    <Col xs={12} lg={3}>
-                        <Form onSubmit={handleSubmit} className="mb-2">
-                            <Form.Control className="mb-2" size="sm" type="text" placeholder="Nro de Documento" name="nroDoc" onChange={handleChange} value={inputs.nroDoc || ""} ></Form.Control>
-                            <Form.Control className="mb-2" size="sm" type="text" placeholder="Nombres" name="nombres" onChange={handleChange} value={inputs.nombres || ""}></Form.Control>
-                            <Form.Control className="mb-2" size="sm" type="text" placeholder="Apellidos" name="apellidos" onChange={handleChange} value={inputs.apellidos || ""}></Form.Control>
-                            <Form.Control className="mb-2" size="sm" type="text" placeholder="Correo" name="correo" onChange={handleChange} value={inputs.correo || ""}></Form.Control>
-                            <Form.Control className="mb-2" size="sm" type="text" placeholder="Contraseña" name="password" onChange={handleChange} value={inputs.password || ""}></Form.Control>
-                            <Button variant="primary" type="submit" size="sm" disabled={spinnerAgregarUsuario ? true : false}>
-                                {spinnerAgregarUsuario ? (<>
-                                    <Spinner
-                                        as="span"
-                                        animation="border"
-                                        size="sm"
-                                        role="status"
-                                        aria-hidden="true"
-                                    />
-                                </>) : (<></>)} {' '}Crear Usuario
-                            </Button>
-                        </Form>
-                        {
-                            {
-                                'string': <AlertUsuarioString />,
-                                'object': <AlertUsuarioArray />
-                            }[typeof responseAgregarUsuario]
-                        }
+                    <Col xs={12} lg={12}>
+                        <Button className="mb-2" variant="contained" color="primary" onClick={handleShowModalAgregarUsuario} ><MdOutlineAddCircle /></Button>
+                        {JSON.stringify(accion)}
                     </Col>
-                    <Col xs={12} lg={9}>
-                        <Form.Control className="mb-2" size="sm" type="text" placeholder="Busqueda" onChange={(e) => { setBusqueda(e.target.value) }} value={busqueda}></Form.Control>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>nro doc</th>
-                                    <th>nombre</th>
-                                    <th>apellidos</th>
-                                    <th>correo</th>
-                                    <th>rol</th>
-                                    <th>acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {usuariosGeneral.map((usuario, index) => (
-                                    <tr key={index}>
-                                        <td data-label="nro Doc">{usuario.nroDoc}</td>
-                                        <td data-label="nombres">{usuario.nombres}</td>
-                                        <td data-label="apellidos">{usuario.apellidos}</td>
-                                        <td data-label="correo">{usuario.correo}</td>
-                                        <td data-label="rol">{usuario.rol}</td>
-                                        <td data-label="acciones">
-                                            <Button variant="secondary" size="sm" onClick={() => { handleShowModalEditar(usuario.id) }}><ImPencil /></Button>
-                                            <Button variant="danger" size="sm" onClick={() => { handleShowModalEliminar(usuario.id) }}><BsFillTrashFill /></Button>
-                                            <Button variant="success" size="sm" onClick={() => { handleShowModalPassword(usuario.id) }}><BsKeyFill /></Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {usuariosGeneral.length === 0 ? (<tr><td colSpan="6" className="text-center">No hay resultados</td></tr>) : (<></>)}
-                            </tbody>
-                        </table>
-                        <Pagination count={paginas} color="primary" page={paginaSeleccionada} onChange={handleChangemarco} />
+                    <Col xs={12} lg={12}>
+                        <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value) }} value={busqueda} sx={styleButton} />
+                        <DataTable
+                            columns={columns}
+                            data={usuariosFiltrado}
+                            dense
+                            pagination
+                            title="Modulo de Usuarios"
+                            striped
+                        />
                     </Col>
                 </Row>
             </Container>
@@ -328,9 +271,10 @@ const Usuarios = () => {
                                                 "object": <AlertContraseñaArray />
                                             }[typeof alertContrasena.message]}
                                         </Alert>
-                                    </>
+                                    </>,
                                 }[alertContrasena.response]}
-                            </>
+                            </>,
+                            "agregar":<AgregarUsuario />
                     }[accion]}
                 </Modal.Body>
                 <Modal.Footer>
@@ -356,7 +300,8 @@ const Usuarios = () => {
                                     role="status"
                                     aria-hidden="true"
                                 />
-                            </>) : (<></>)} {' '}Guardar</Button>
+                            </>) : (<></>)} {' '}Guardar</Button>,
+
                     }[accion]}
                 </Modal.Footer>
             </Modal>
