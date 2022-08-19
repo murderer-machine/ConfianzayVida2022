@@ -1,15 +1,16 @@
 import React, { useState } from "react"
 import { TextField, Button } from '@mui/material'
-import { Container, Row, Col, Form, Spinner,Alert } from "react-bootstrap"
+import { Container, Row, Col, Form, Spinner, Alert } from "react-bootstrap"
+import {styleButton} from '../../styles/globals'
+const AgregarUsuario = ({ handleActualizarDatos }) => {
 
-const AgregarUsuario = () => {
     const [inputs, setInputs] = useState({})
     const [responseAgregarUsuario, setResponseAgregarUsuario] = useState('')
     const [spinnerAgregarUsuario, setSpinnerAgregarUsuario] = useState(false)
     const handleChange = (event) => {
         const name = event.target.name
         const value = event.target.value
-        setInputs(values => ({ ...values, [name]: value }))
+        setInputs(values => ({ ...values, [name]: value.toLowerCase() }))
     }
     const AlertUsuarioString = () => {
         return (
@@ -45,10 +46,10 @@ const AgregarUsuario = () => {
         }).then(res => res.json())
             .catch(error => console.error('Error:', error))
             .then(response => {
-                console.log(JSON.stringify(response))
                 setSpinnerAgregarUsuario(false)
                 if (response.response) {
                     setInputs({})
+                    handleActualizarDatos()
                     setResponseAgregarUsuario('Usuario agregado correctamente')
                 }
                 if (!response.response) {
@@ -56,13 +57,7 @@ const AgregarUsuario = () => {
                 }
             })
     }
-    const styleButton = {
-        "& .MuiOutlinedInput-root:hover": {
-            "& > fieldset": {
-                borderColor: "#2A427B",
-            }
-        }
-    }
+   
     return (
         <>
             <Container>
@@ -73,7 +68,7 @@ const AgregarUsuario = () => {
                             <TextField className="mb-2" id="outlined-basic" name="nombres" label="Nombres" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.nombres || ""} sx={styleButton} />
                             <TextField className="mb-2" id="outlined-basic" name="apellidos" label="Apellidos" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.apellidos || ""} sx={styleButton} />
                             <TextField className="mb-2" id="outlined-basic" name="correo" label="Correo" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.correo || ""} sx={styleButton} />
-                            <TextField className="mb-2" id="outlined-basic" name="password" label="Contraseña" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.password || ""} sx={styleButton} />
+                            <TextField className="mb-2" id="outlined-basic" name="password" label="Contraseña" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.password || ""} sx={styleButton} type="password"/>
                             <Button variant="contained" type="submit" size="small" disabled={spinnerAgregarUsuario ? true : false}>
                                 {spinnerAgregarUsuario ? (<>
                                     <Spinner

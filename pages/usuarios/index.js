@@ -9,6 +9,9 @@ import { TextField, Button } from '@mui/material'
 import DataTable from 'react-data-table-component'
 
 import AgregarUsuario from './agregarUsuario'
+
+import { styleButton } from '../../styles/globals'
+
 const Usuarios = () => {
     /**
      * Modulo de usuarios
@@ -23,30 +26,37 @@ const Usuarios = () => {
         {
             name: '#',
             selector: row => row.id,
+            sortable: true,
         },
         {
             name: 'Nro Documento',
             selector: row => row.nroDoc,
+            sortable: true,
         },
         {
             name: 'Nombres',
             selector: row => row.nombres,
+            sortable: true,
         },
         {
             name: 'Apellidos',
             selector: row => row.apellidos,
+            sortable: true,
         },
         {
             name: 'Correo',
             selector: row => row.correo,
+            sortable: true,
         },
         {
             name: 'Rol',
             selector: row => row.rol,
+            sortable: true,
         },
         {
             name: 'Editar',
-            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalEditar(row.id) }}><ImPencil /></Button>
+            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalEditar(row.id) }}><ImPencil /></Button>,
+            sortable: true,
         },
         {
             name: 'Eliminar',
@@ -57,9 +67,10 @@ const Usuarios = () => {
             selector: row => <Button variant="contained" color="success" size="small" onClick={() => { handleShowModalPassword(row.id) }}><BsKeyFill /></Button>
         }
     ]
+    const [actualizar, setActualizar] = useState(false)
     useEffect(() => {
         cargarUsuarios()
-    }, [])
+    }, [actualizar])
     /** */
     /**
      * Modulo de busqueda
@@ -83,21 +94,30 @@ const Usuarios = () => {
     const [modalAcciones, setModalAcciones] = useState(false)
     const [idUsuarioeliminar, setIdUsuarioEliminar] = useState({})
     const handleCloseModalAcciones = () => {
+        setActualizar(!actualizar)
         setModalAcciones(false)
         setIdUsuarioEliminar({})
         setAlertContrasena({})
         setAlertEditar({})
+        setAlertEliminar({ ...alertEliminar, condicion: false, mensaje: '' })
     }
-
     const handleShowModalEliminar = (id) => {
         setAccion('eliminar')
         setIdUsuarioEliminar(usuariosGeneral.find(element => { return element.id === id }))
         setModalAcciones(true)
     }
+    const [alertEliminar, setAlertEliminar] = useState({
+        condicion: false,
+        mensaje: ''
+    })
     const eliminarUsuario = async () => {
-        const response = await fetch(`${process.env.URL}api/usuarios/${idUsuarioeliminar.id}`, { method: 'PUT' })
+        const response = await fetch(`${process.env.URL}/api/usuarios/${idUsuarioeliminar.id}`, { method: 'delete' })
         const data = await response.json()
+        if (!data.ressponse) {
+            setAlertEliminar({ ...alertEliminar, condicion: true, mensaje: data.message })
+        }
         if (data.response) {
+            setAlertEliminar({ ...alertEliminar, condicion: false, mensaje: '' })
             handleCloseModalAcciones()
         }
     }
@@ -125,7 +145,7 @@ const Usuarios = () => {
     const cambiarContrasenaUsuario = async () => {
         setAlertContrasena({})
         setSpinnerContrasena(true)
-        const response = await fetch(`${process.env.URL}api/usuarios/cambiarcontrasena/${idUsuarioeliminar.id}`,
+        const response = await fetch(`${process.env.URL}/api/usuarios/cambiarcontrasena/${idUsuarioeliminar.id}`,
             {
                 method: 'PUT',
                 body: JSON.stringify(inputContrasena),
@@ -165,7 +185,7 @@ const Usuarios = () => {
     const [spinnerEditar, setSpinnerEditar] = useState(false)
     const editarUsuario = async () => {
         setSpinnerEditar(true)
-        const response = await fetch(`${process.env.URL}api/usuarios/${idUsuarioeliminar.id}`,
+        const response = await fetch(`${process.env.URL}/api/usuarios/${idUsuarioeliminar.id}`,
             {
                 method: 'PUT',
                 body: JSON.stringify(idUsuarioeliminar),
@@ -174,6 +194,9 @@ const Usuarios = () => {
                 }
             })
         const data = await response.json()
+        if (data.response) {
+            handleActualizarDatos()
+        }
         setSpinnerEditar(false)
         setAlertEditar(data)
     }
@@ -191,13 +214,17 @@ const Usuarios = () => {
             }
         }
     }
+    const [actualizarDatos, setActualizarDatos] = useState(false)
+    const handleActualizarDatos = () => {
+        setActualizar(!actualizar)
+    }
     return (
         <>
             <Container>
+
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
                     <Col xs={12} lg={12}>
                         <Button className="mb-2" variant="contained" color="primary" onClick={handleShowModalAgregarUsuario} ><MdOutlineAddCircle /></Button>
-                        {JSON.stringify(accion)}
                     </Col>
                     <Col xs={12} lg={12}>
                         <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value) }} value={busqueda} sx={styleButton} />
@@ -208,6 +235,7 @@ const Usuarios = () => {
                             pagination
                             title="Modulo de Usuarios"
                             striped
+                            noDataComponent={<div>No se encontraron registros</div>}
                         />
                     </Col>
                 </Row>
@@ -217,17 +245,18 @@ const Usuarios = () => {
                     <Modal.Title> {{
                         "editar": "Editar Usuario",
                         "eliminar": "Eliminar Usuario",
-                        "password": "Cambiar Contraseña"
+                        "password": "Cambiar Contraseña",
+                        "agregar": "Agregar Usuario"
                     }[accion]}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {{
                         "editar":
                             <>
-                                <Form.Control className="mb-2" size="sm" type="text" placeholder="Nro de Documento" name="nroDoc" onChange={handleChangeEditar} value={idUsuarioeliminar.nroDoc || ""} autoFocus></Form.Control>
-                                <Form.Control className="mb-2" size="sm" type="text" placeholder="Nombres" name="nombres" onChange={handleChangeEditar} value={idUsuarioeliminar.nombres || ""} ></Form.Control>
-                                <Form.Control className="mb-2" size="sm" type="text" placeholder="Apellidos" name="apellidos" onChange={handleChangeEditar} value={idUsuarioeliminar.apellidos || ""} ></Form.Control>
-                                <Form.Control className="mb-2" size="sm" type="text" placeholder="Correo" name="correo" onChange={handleChangeEditar} value={idUsuarioeliminar.correo || ""} ></Form.Control>
+                                <TextField className="mb-2" id="outlined-basic" name="nroDoc" label="Nro de Documento" variant="outlined" size="small" fullWidth onChange={handleChangeEditar} value={idUsuarioeliminar.nroDoc || ""} sx={styleButton} />
+                                <TextField className="mb-2" id="outlined-basic" name="nombres" label="Nombres" variant="outlined" size="small" fullWidth onChange={handleChangeEditar} value={idUsuarioeliminar.nombres || ""} sx={styleButton} />
+                                <TextField className="mb-2" id="outlined-basic" name="apellidos" label="Apellidos" variant="outlined" size="small" fullWidth onChange={handleChangeEditar} value={idUsuarioeliminar.apellidos || ""} sx={styleButton} />
+                                <TextField className="mb-2" id="outlined-basic" name="correo" label="Correo" variant="outlined" size="small" fullWidth onChange={handleChangeEditar} value={idUsuarioeliminar.correo || ""} sx={styleButton} />
                                 {{
                                     true:
                                         <>
@@ -250,11 +279,18 @@ const Usuarios = () => {
                         "eliminar":
                             <>
                                 <p>¿Esta seguro que desea eliminar al usuario?</p>
-                                <p>{idUsuarioeliminar.nombres} {idUsuarioeliminar.apellidos} </p>
+                                <p><b>{idUsuarioeliminar.nombres} {idUsuarioeliminar.apellidos}</b> </p>
+                                {alertEliminar.condicion ? (<>
+                                    <Alert variant="danger">
+                                        <Alert.Heading>Respuesta Servidor : </Alert.Heading>
+                                        {alertEliminar.mensaje}
+                                    </Alert>
+                                </>) : (<></>)}
                             </>,
                         "password":
                             <>
-                                <Form.Control className="mb-2" size="sm" type="password" placeholder="Contraseña" name="password" onChange={handleChangeContrasena} value={inputContrasena.password || ""} autoFocus></Form.Control>
+                                <TextField className="mb-2" id="outlined-basic" name="password" label="Contraseña" variant="outlined" size="small" fullWidth onChange={handleChangeContrasena}value={inputContrasena.password || ""} sx={styleButton} type="password"/>
+
                                 {{
                                     true:
                                         <>
@@ -274,13 +310,13 @@ const Usuarios = () => {
                                     </>,
                                 }[alertContrasena.response]}
                             </>,
-                            "agregar":<AgregarUsuario />
+                        "agregar": <AgregarUsuario handleActualizarDatos={handleActualizarDatos} />
                     }[accion]}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" size="sm" onClick={handleCloseModalAcciones}>Cerrar</Button>
+                    <Button variant="contained" color="secondary" size="small" onClick={handleCloseModalAcciones}>Cerrar</Button>
                     {{
-                        "editar": <Button variant="primary" size="sm" onClick={editarUsuario} disabled={spinnerEditar ? true : false}>
+                        "editar": <Button variant="contained" color="primary" size="small" onClick={editarUsuario} disabled={spinnerEditar ? true : false}>
                             {spinnerEditar ? (<>
                                 <Spinner
                                     as="span"
@@ -290,8 +326,8 @@ const Usuarios = () => {
                                     aria-hidden="true"
                                 />
                             </>) : (<></>)} {' '}Guardar</Button>,
-                        "eliminar": <Button variant="danger" size="sm" onClick={eliminarUsuario}>Eliminar</Button>,
-                        "password": <Button variant="primary" size="sm" onClick={cambiarContrasenaUsuario} disabled={spinnerContrasena ? true : false}>
+                        "eliminar": <Button variant="contained" color="error" size="small" onClick={eliminarUsuario}>Eliminar</Button>,
+                        "password": <Button variant="contained" color="primary" size="small" onClick={cambiarContrasenaUsuario} disabled={spinnerContrasena ? true : false}>
                             {spinnerContrasena ? (<>
                                 <Spinner
                                     as="span"
