@@ -1,13 +1,15 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Container, Row, Col } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
-import { Button } from '@mui/material'
 import { ImPencil } from 'react-icons/im'
-import { BsFillTrashFill, BsKeyFill } from 'react-icons/bs'
-import { MdOutlineAddCircle } from 'react-icons/md'
-import Image from 'next/image'
-import { Alert, Badge } from 'react-bootstrap'
+import { BsFillTrashFill } from 'react-icons/bs'
+import { Alert, Badge, Modal } from 'react-bootstrap'
+import { TextField, Button } from '@mui/material'
+import { styleButton } from '../../styles/globals'
 const EmpresasSeguros = () => {
+    /**
+     * @description Función que se ejecuta al iniciar el componente
+     */
     const [empresas, setEmpresas] = React.useState([])
     const cargarEmpresas = async () => {
         const response = await fetch(`${process.env.URL}/api/empresasSeguros/`)
@@ -17,6 +19,16 @@ const EmpresasSeguros = () => {
     useEffect(() => {
         cargarEmpresas()
     }, [])
+    /**
+     * @description Función que se ejecuta al buscar una empresa
+     */
+    const [busqueda, setBusqueda] = useState('')
+    const empresasFiltrado = empresas.filter(e => {
+        return e.nombre.includes(busqueda)
+    })
+    /** 
+     * @description Función que se ejecuta al expandir tabla una empresa
+    */
     const ExpandedComponent = ({ data }) => {
         return (
             <Alert variant="secondary" className="p-2 m-2">
@@ -40,6 +52,21 @@ const EmpresasSeguros = () => {
             </Alert>
         )
     }
+    /**
+     * @description Función que se ejecuta al abrir el modal
+    */
+    const [accion, setAccion] = useState('')
+    const [modalAcciones, setModalAcciones] = useState(false)
+    const handleCloseModalAcciones = () => {
+        setModalAcciones(false)
+    }
+    const handleShowModalAcciones = (accion,data) => {
+        setModalAcciones(true)
+        setAccion(accion)
+
+    }
+
+
     const columns = [
         {
             name: 'Nombre',
@@ -58,25 +85,22 @@ const EmpresasSeguros = () => {
         },
         {
             name: 'Editar',
-            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalEditar(row.id) }}><ImPencil /></Button>,
+            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalAcciones('editar', row) }}><ImPencil /></Button>,
         },
         {
             name: 'Eliminar',
-            selector: row => <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalEliminar(row.id) }}><BsFillTrashFill /></Button>
+            selector: row => <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalAcciones('eliminar', row) }}><BsFillTrashFill /></Button>
         },
-        {
-            name: 'Contraseña',
-            selector: row => <Button variant="contained" color="success" size="small" onClick={() => { handleShowModalPassword(row.id) }}><BsKeyFill /></Button>
-        }
     ]
     return (
         <>
             <Container>
-                <Row>
+                <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
                     <Col xd={12}>
+                        <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value) }} value={busqueda} sx={styleButton} />
                         <DataTable
                             columns={columns}
-                            data={empresas}
+                            data={empresasFiltrado}
                             dense
                             pagination
                             title="Modulo de Empresas"
@@ -87,6 +111,21 @@ const EmpresasSeguros = () => {
                     </Col>
                 </Row>
             </Container>
+            <Modal show={modalAcciones} onHide={handleCloseModalAcciones}>
+                <Modal.Header closeButton>
+                    <Modal.Title> {{
+                        "editar": "Editar Empresa",
+                        "eliminar": "Eliminar Empresa",
+                        "agregar": "Agregar Empresa"
+                    }[accion]}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    hola soy modal
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="contained" color="secondary" size="small" onClick={handleCloseModalAcciones}>Cerrar</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }
