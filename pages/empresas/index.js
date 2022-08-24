@@ -1,10 +1,12 @@
 import React, { useEffect } from "react"
-import { Container,Row,Col } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { Button } from '@mui/material'
 import { ImPencil } from 'react-icons/im'
 import { BsFillTrashFill, BsKeyFill } from 'react-icons/bs'
 import { MdOutlineAddCircle } from 'react-icons/md'
+import Image from 'next/image'
+import { Alert, Badge } from 'react-bootstrap'
 const EmpresasSeguros = () => {
     const [empresas, setEmpresas] = React.useState([])
     const cargarEmpresas = async () => {
@@ -17,19 +19,33 @@ const EmpresasSeguros = () => {
     }, [])
     const ExpandedComponent = ({ data }) => {
         return (
-            <div>
-            <b>Factor General : </b>{data.factorGeneral}
-            <b>Factor Soat : </b>{data.factorSoat}
-            <b>Gastos Emision : </b>{data.gastosEmision}
-            <b>Gastos Emision Minimo : </b>{data.gastosEmisionMinimo}
-            </div>
+            <Alert variant="secondary" className="p-2 m-2">
+                <Container>
+                    <Row className="p-2">
+                        <Col xs={12} lg={6}>
+                            <b>Factor General : </b>{data.factorGeneral}<br />
+                            <b>Factor Soat : </b>{data.factorSoat}<br />
+                            <b>Gastos Emision : </b>{data.gastosEmision}<br />
+                            <b>Gastos Emision Minimo : </b>{data.gastosEmisionMinimo}<br />
+                            <b>Gastos Emision Minimo Soat : </b>{data.gastosEmisionMinimoSoat}<br />
+                        </Col>
+                        <Col xs={12} lg={6}>
+                            <b>Logo : </b>
+                            {!data.logo ? (<>Sin logo</>) : (<>
+                                <img src={`${process.env.URLIMAGENES}/${data.logo}`} height={40} />
+                            </>)}
+                        </Col>
+                    </Row>
+                </Container>
+            </Alert>
         )
     }
     const columns = [
         {
             name: 'Nombre',
-            selector: row => row.nombre,
+            selector: row => row.nombre.toUpperCase(),
             sortable: true,
+            width: '30%'
         },
         {
             name: 'Ruc',
@@ -37,24 +53,12 @@ const EmpresasSeguros = () => {
             sortable: true,
         },
         {
-            name: 'gastosEmisionMinimoSoat',
-            selector: row => row.gastosEmisionMinimoSoat,
-            sortable: true,
-        },
-        {
-            name: 'activo',
-            selector: row => row.activo,
-            sortable: true,
-        },
-        {
-            name: 'logo',
-            selector: row => row.logo,
-            sortable: true,
+            name: 'Estado',
+            selector: row => row.activo ? (<><Badge bg="success">Activo</Badge></>) : (<><Badge bg="secondary">Inactivo</Badge></>),
         },
         {
             name: 'Editar',
             selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalEditar(row.id) }}><ImPencil /></Button>,
-            sortable: true,
         },
         {
             name: 'Eliminar',
