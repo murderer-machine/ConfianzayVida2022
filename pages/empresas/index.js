@@ -115,7 +115,7 @@ const EmpresasSeguros = () => {
                     </Col>
                 </Row>
             </Container>
-            <Modal show={modalAcciones} onHide={handleCloseModalAcciones}>
+            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} >
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {{
@@ -132,8 +132,8 @@ const EmpresasSeguros = () => {
                         "agregar": "Agregar Empresa"
                     }[accion]}
                 </Modal.Body>
-
             </Modal>
+            
         </>
     )
 }
