@@ -17,14 +17,14 @@ const EmpresasSeguros = () => {
     const actualizarEmpresasFn = () => {
         setActualizarEmpresas(!actualizarEmpresas)
     }
-    const [empresas, setEmpresas] = React.useState([])
-    const cargarEmpresas = async () => {
+    const [empresas, setEmpresas] = useState([])
+    const leer = async () => {
         const response = await fetch(`${process.env.URL}/api/empresasSeguros/`)
         const data = await response.json()
         setEmpresas(data.message)
     }
     useEffect(() => {
-        cargarEmpresas()
+        leer()
     }, [actualizarEmpresas])
     /**
      * @description Función que se ejecuta al buscar una empresa
