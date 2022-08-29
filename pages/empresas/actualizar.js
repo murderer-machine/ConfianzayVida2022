@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { styleButton } from '../../styles/globals'
 import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { TextField, Button, Alert } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
-const Editar = ({ data, cerrar, actualizar }) => {
+const Actualizar = ({ data, cerrar, actualizar }) => {
     const [dataInputs, setDataInputs] = useState(data)
     const handleChange = (event) => {
         const name = event.target.name
@@ -20,7 +20,7 @@ const Editar = ({ data, cerrar, actualizar }) => {
     }]
     const [spinner, setSpinner] = useState(false)
     const [response, setResponse] = useState({})
-    const editarUsuario = async () => {
+    const editar = async () => {
         setSpinner(true)
         const response = await fetch(`${process.env.URL}/api/empresasSeguros`,
             {
@@ -45,7 +45,7 @@ const Editar = ({ data, cerrar, actualizar }) => {
     const ResponseArray = () => {
         return (
             (response.message).map((element, index) => (
-                <span key={index} className="p-0 m-0" style={{ display: "block" }}><b>*</b>{element}</span>
+                <span key={index} className="p-0 m-0" style={{ display: "block" }}><b>* </b>{element}</span>
             ))
         )
     }
@@ -68,8 +68,9 @@ const Editar = ({ data, cerrar, actualizar }) => {
                         getOptionLabel={(option) => option.label}
                         value={opcionesSelectActivo.find(o => o.valor === dataInputs.activo)}
                         onChange={(event, value) => {
-                            setDataInputs(values => ({ ...values, activo: value == null ? false : value.valor }))
+                            setDataInputs(values => ({ ...values, activo: value == null ? '' : value.valor }))
                         }}
+                        noOptionsText="No se encontraron resultados"
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -95,7 +96,7 @@ const Editar = ({ data, cerrar, actualizar }) => {
                 </Col>
                 <Col xs={12}>
                     <Modal.Footer>
-                        <Button variant="contained" color="primary" size="small" onClick={editarUsuario} disabled={spinner ? true : false}>
+                        <Button variant="contained" color="primary" size="small" onClick={editar} disabled={spinner ? true : false}>
                             {spinner ? (<>
                                 <Spinner
                                     as="span"
@@ -112,7 +113,4 @@ const Editar = ({ data, cerrar, actualizar }) => {
         </Container>
     )
 }
-Editar.defaultProps = {
-    data: {}
-}
-export default Editar
+export default Actualizar

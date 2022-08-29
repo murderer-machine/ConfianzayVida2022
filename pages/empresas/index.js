@@ -3,10 +3,12 @@ import { Container, Row, Col, Alert, Badge, Modal } from 'react-bootstrap'
 import DataTable from 'react-data-table-component'
 import { ImPencil } from 'react-icons/im'
 import { BsFillTrashFill } from 'react-icons/bs'
-
+import { MdOutlineAddCircle } from 'react-icons/md'
 import { TextField, Button } from '@mui/material'
 import { styleButton } from '../../styles/globals'
-import Editar from './editar'
+import Actualizar from './actualizar'
+import Eliminar from './eliminar'
+import Insertar from "./insertar"
 const EmpresasSeguros = () => {
     /**
      * @description Función que se ejecuta al iniciar el componente
@@ -61,12 +63,12 @@ const EmpresasSeguros = () => {
      * @description Función que se ejecuta al abrir el modal
     */
     const [accion, setAccion] = useState('')
-    const [dataAccion, setDataAccion] = useState({})
+    const [dataAccion, setDataAccion] = useState('')
     const [modalAcciones, setModalAcciones] = useState(false)
     const handleCloseModalAcciones = () => {
         setModalAcciones(false)
     }
-    const handleShowModalAcciones = (accion, data) => {
+    const handleShowModalAcciones = (accion, data = {}) => {
         setDataAccion(data)
         setModalAcciones(true)
         setAccion(accion)
@@ -100,8 +102,11 @@ const EmpresasSeguros = () => {
         <>
             <Container>
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
+                    <Col xs={12}>
+                        <Button className="mb-2" variant="contained" color="primary" onClick={() => { handleShowModalAcciones('insertar') }}><MdOutlineAddCircle /></Button>
+                    </Col>
                     <Col xd={12}>
-                        <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value) }} value={busqueda} sx={styleButton} />
+                        <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value.toLowerCase()) }} value={busqueda} sx={styleButton} />
                         <DataTable
                             columns={columns}
                             data={empresasFiltrado}
@@ -119,21 +124,20 @@ const EmpresasSeguros = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {{
-                            "editar": "Editar Empresa",
+                            "editar": "Actualizar Empresa",
                             "eliminar": "Eliminar Empresa",
-                            "agregar": "Agregar Empresa"
+                            "insertar": "Insertar Empresa"
                         }[accion]}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "editar": <Editar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarEmpresasFn} />,
-                        "eliminar": "Eliminar Empresa",
-                        "agregar": "Agregar Empresa"
+                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarEmpresasFn} />,
+                        "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarEmpresasFn} />,
+                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarEmpresasFn} />
                     }[accion]}
                 </Modal.Body>
             </Modal>
-            
         </>
     )
 }
