@@ -236,6 +236,10 @@ const Usuarios = () => {
                             title="Modulo de Usuarios"
                             striped
                             noDataComponent={<div>No se encontraron registros</div>}
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[50, 100, 200]}
+                            highlightOnHover
+                            pointerOnHover
                         />
                     </Col>
                 </Row>
@@ -289,7 +293,7 @@ const Usuarios = () => {
                             </>,
                         "password":
                             <>
-                                <TextField className="mb-2" id="outlined-basic" name="password" label="Contraseña" variant="outlined" size="small" fullWidth onChange={handleChangeContrasena}value={inputContrasena.password || ""} sx={styleButton} type="password"/>
+                                <TextField className="mb-2" id="outlined-basic" name="password" label="Contraseña" variant="outlined" size="small" fullWidth onChange={handleChangeContrasena} value={inputContrasena.password || ""} sx={styleButton} type="password" />
 
                                 {{
                                     true:

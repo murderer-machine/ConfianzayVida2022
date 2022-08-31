@@ -75,6 +75,12 @@ const EmpresasSeguros = () => {
     }
     const columns = [
         {
+            name: '#',
+            selector: row => row.id,
+            sortable: true,
+            width: '5%'
+        },
+        {
             name: 'Nombre',
             selector: row => row.nombre.toUpperCase(),
             sortable: true,
@@ -116,6 +122,10 @@ const EmpresasSeguros = () => {
                             striped
                             noDataComponent={<div>No se encontraron registros</div>}
                             expandableRows expandableRowsComponent={ExpandedComponent}
+                            paginationPerPage={50}
+                            paginationRowsPerPageOptions={[50, 100, 200]}
+                            highlightOnHover
+                            pointerOnHover
                         />
                     </Col>
                 </Row>

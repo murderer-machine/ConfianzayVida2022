@@ -25,6 +25,7 @@ const Polizas = () => {
             }
         })
         return placa && nombre && nroDoc && clientes_contactos
+        // return placa || nombre || nroDoc || clientes_contactos
     })
     const mostrarTodo = async () => {
         const response = await fetch(`${process.env.URL}/api/polizas/?situacion=${situacion}`,
