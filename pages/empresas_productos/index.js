@@ -6,6 +6,8 @@ import { ImPencil } from 'react-icons/im'
 import { BsFillTrashFill } from 'react-icons/bs'
 import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
+import Eliminar from './eliminar'
+import Actualizar from './actualizar'
 const EmpresasProductos = () => {
     const [empresasProductos, setEmpresasProductos] = useState([])
     const [busqueda, setBusqueda] = useState('')
@@ -24,9 +26,7 @@ const EmpresasProductos = () => {
         }
         return nombre || ramo || nombre_empresa
     })
-    useEffect(() => {
-        leer()
-    }, [])
+
     const columns = [
         {
             name: '#',
@@ -70,10 +70,32 @@ const EmpresasProductos = () => {
             width: '9%',
         },
     ]
+    const [accion, setAccion] = useState('')
+    const [dataAccion, setDataAccion] = useState('')
+    const [modalAcciones, setModalAcciones] = useState(false)
+    const [actualizar, setActualizar] = useState(false)
+    const handleShowModalAcciones = (accion, data = {}) => {
+        setDataAccion(data)
+        setModalAcciones(true)
+        setAccion(accion)
+    }
+    const handleCloseModalAcciones = () => {
+        setModalAcciones(false)
+    }
+
+    const actualizarFn = () => {
+        setActualizar(!actualizar)
+    }
+    useEffect(() => {
+        leer()
+    }, [actualizar])
     return (
         <>
             <Container>
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
+                    <Col xs={12}>
+                        <Button className="mb-2" variant="contained" color="primary" onClick={() => { handleShowModalAcciones('insertar') }}><MdOutlineAddCircle /></Button>
+                    </Col>
                     <Col xs={12}>
                         <TextField className="mb-2" id="outlined-basic" label="Busqueda" variant="outlined" size="small" fullWidth onChange={(e) => { setBusqueda(e.target.value.toLowerCase()) }} value={busqueda} sx={styleButton} />
                         <DataTable
@@ -92,6 +114,24 @@ const EmpresasProductos = () => {
                     </Col>
                 </Row>
             </Container>
+            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        {{
+                            "editar": "Actualizar Empresa",
+                            "eliminar": "Eliminar Empresa",
+                            "insertar": "Insertar Empresa"
+                        }[accion]}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {{
+                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
+                        "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
+                        // "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
+                    }[accion]}
+                </Modal.Body>
+            </Modal>
         </>
     )
 }
