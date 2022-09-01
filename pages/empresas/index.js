@@ -106,6 +106,7 @@ const EmpresasSeguros = () => {
     ]
     return (
         <>
+        
             <Container>
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
                     <Col xs={12}>

@@ -1,12 +1,12 @@
 import React, { useState } from "react"
 import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { Button, Alert } from '@mui/material'
-const EliminarEmpresa = ({ data, cerrar, actualizar }) => {
+const Eliminar = ({ data, cerrar, actualizar }) => {
     const [spinner, setSpinner] = useState(false)
     const [response, setResponse] = useState({})
     const eliminar = async (id) => {
         setSpinner(true)
-        const response = await fetch(`${process.env.URL}/api/empresasSeguros/${id}`,
+        const response = await fetch(`${process.env.URL}/api/empresasProductos/${id}`,
             {
                 method: 'DELETE',
             })
@@ -27,7 +27,7 @@ const EliminarEmpresa = ({ data, cerrar, actualizar }) => {
             <Container>
                 <Row>
                     <Col xs={12}>
-                        ¿Esta seguro que desea eliminar la empresa <b>{data.nombre.toUpperCase()}</b>?
+                        ¿Esta seguro que desea eliminar el producto <b>{data.nombre.toUpperCase()}</b>?
                     </Col>
                     <Col xs={12} lg={12}>
                         {Object.keys(response).length > 0 && !response.response ? (<>
@@ -56,9 +56,9 @@ const EliminarEmpresa = ({ data, cerrar, actualizar }) => {
         </>) : (<></>)
     )
 }
-EliminarEmpresa.defaultProps = {
-    data: {nombre: ''},
+Eliminar.defaultProps = {
+    data: { nombre: '' },
     cerrar: () => { },
     actualizar: () => { }
 }
-export default EliminarEmpresa
+export default Eliminar

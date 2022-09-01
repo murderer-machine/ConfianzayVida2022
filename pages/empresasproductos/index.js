@@ -8,7 +8,7 @@ import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
 import Actualizar from './actualizar'
-const EmpresasProductos = () => {
+const EmpresasProductos = ({ empresasData }) => {
     const [empresasProductos, setEmpresasProductos] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const leer = async () => {
@@ -89,6 +89,8 @@ const EmpresasProductos = () => {
     useEffect(() => {
         leer()
     }, [actualizar])
+
+
     return (
         <>
             <Container>
@@ -126,7 +128,7 @@ const EmpresasProductos = () => {
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
+                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
                         // "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
                     }[accion]}
@@ -134,5 +136,10 @@ const EmpresasProductos = () => {
             </Modal>
         </>
     )
+}
+export async function getServerSideProps() {
+    const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
+    const empresasResponse = await empresasFetch.json()
+    return { props: { empresasData: empresasResponse.message } }
 }
 export default EmpresasProductos

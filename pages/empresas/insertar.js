@@ -51,7 +51,7 @@ const Insertar = ({ data, cerrar, actualizar }) => {
         )
     }
     return (
-        <>
+        data ? (<>
             <Container>
                 <Row>
                     <Col xs={12}>
@@ -113,7 +113,12 @@ const Insertar = ({ data, cerrar, actualizar }) => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </>) : (<></>)
     )
+}
+Insertar.defaultProps = {
+    data: {},
+    cerrar: () => { },
+    actualizar: () => { }
 }
 export default Insertar
