@@ -8,7 +8,7 @@ import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
 import Actualizar from './actualizar'
-const EmpresasProductos = ({ empresasData }) => {
+const EmpresasProductos = ({ empresasData,ramosData }) => {
     const [empresasProductos, setEmpresasProductos] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const leer = async () => {
@@ -128,7 +128,7 @@ const EmpresasProductos = ({ empresasData }) => {
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} />,
+                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData}/>,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
                         // "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
                     }[accion]}
@@ -140,6 +140,14 @@ const EmpresasProductos = ({ empresasData }) => {
 export async function getServerSideProps() {
     const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
     const empresasResponse = await empresasFetch.json()
-    return { props: { empresasData: empresasResponse.message } }
+
+    const ramosFetch = await fetch(`${process.env.URL}/api/ramos/`)
+    const ramosResponse = await ramosFetch.json()
+    return { 
+        props: { 
+            empresasData: empresasResponse.message ,
+            ramosData: ramosResponse.message
+        } 
+    }
 }
 export default EmpresasProductos

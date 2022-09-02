@@ -3,67 +3,121 @@ import { styleButton } from '../../styles/globals'
 import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { TextField, Button, Alert } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
-const Actualizar = ({ data, cerrar, actualizar, empresasData }) => {
+const Actualizar = ({ data, cerrar, actualizar, empresasData, ramosData }) => {
     const [dataInputs, setDataInputs] = useState(data)
     const handleChange = (event) => {
         const name = event.target.name
         const value = event.target.value
         setDataInputs(values => ({ ...values, [name]: value.toLowerCase() }))
     }
+    const [spinner, setSpinner] = useState(false)
+    const [response, setResponse] = useState({})
+    const editar = async () => {
+        setSpinner(true)
+        const response = await fetch(`${process.env.URL}/api/empresasProductos`,
+            {
+                method: 'PUT',
+                body: JSON.stringify(dataInputs),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        const data = await response.json()
+        setResponse(data)
+        if (data.response) {
+            actualizar()
+            // cerrar()
+            setSpinner(false)
+            return
+        } else {
+            setSpinner(false)
+            return
+        }
+    }
+    
+    const ResponseArray = () => {
+        return (
+            (response.message).map((element, index) => (
+                <span key={index} className="p-0 m-0" style={{ display: "block" }}><b>* </b>{element}</span>
+            ))
+        )
+    }
     return (
         data ? (<>
             <Container>
                 <Row>
-                    <h1>{JSON.stringify(dataInputs.empresasSeguroId)}</h1>
                     <Col xs={12} lg={12}>
                         <TextField className="mb-2" id="outlined-basic" name="nombre" label="Nombre" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nombre} sx={styleButton} />
-                        <TextField className="mb-2" id="outlined-basic" name="comision" label="Comision" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.comision} sx={styleButton} />
                         <Autocomplete
                             className="mb-2"
                             size="small"
                             options={empresasData}
                             value={empresasData.find(o => o.id === dataInputs.empresasSeguroId)}
                             getOptionLabel={(option) => `${option.nombre}`}
+                            onChange={(event, value) => {
+                                setDataInputs(values => ({ ...values, empresasSeguroId: value == null ? '' : value.id }))
+                            }}
                             noOptionsText="No se encontraron resultados"
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     fullWidth
-                                    label="Seleccione Estado"
-                                    name="activo"
+                                    label="Seleccione Compañia"
                                     inputProps={{
                                         ...params.inputProps,
                                     }}
                                 />
                             )}
                         />
+                        <Autocomplete
+                            className="mb-2"
+                            size="small"
+                            options={ramosData}
+                            value={ramosData.find(o => o.id === dataInputs.ramoId)}
+                            getOptionLabel={(option) => `${option.descripcion}`}
+                            onChange={(event, value) => {
+                                setDataInputs(values => ({ ...values, ramoId: value == null ? '' : value.id }))
+                            }}
+                            noOptionsText="No se encontraron resultados"
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    fullWidth
+                                    label="Seleccione Ramo"
+                                    inputProps={{
+                                        ...params.inputProps,
+                                    }}
+                                />
+                            )}
+                        />
+                        <TextField className="mb-2" id="outlined-basic" name="comision" label="Comision" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.comision} sx={styleButton} />
                     </Col>
-
-                    {/* <Col xs={12} lg={12}>
+                    {JSON.stringify(dataInputs)}
+                    <Col xs={12} lg={12}>
                     {Object.keys(response).length > 0 ? (<>
                         <Alert severity={response.response ? 'success' : 'error'}>
                             {{
-                                "string": <><b>*</b>{response.message}</>,
+                                "string": <><b>* </b>{response.message}</>,
                                 "object": <ResponseArray></ResponseArray>
                             }[typeof response.message]}
                         </Alert>
                     </>) : (<></>)}
-                </Col> */}
-                    {/* <Col xs={12}>
+                </Col>
+                    <Col xs={12}>
                     <Modal.Footer>
-                        <Button variant="contained" color="primary" size="small" onClick={editar} disabled={spinner ? true : false}>
+                        <Button variant="contained" color="primary" size="small" disabled={spinner ? true : false} onClick={editar}>
                             {spinner ? (<>
                                 <Spinner
                                     as="span"
                                     animation="border"
-                                    size=sm"
+                                    size="sm"
                                     role="status"
                                     aria-hidden="true"
                                 />
                             </>) : (<></>)} Guardar</Button>
                         <Button variant="contained" color="secondary" size="small" onClick={cerrar}>Cerrar</Button>
                     </Modal.Footer>
-                </Col> */}
+                </Col>
                 </Row>
             </Container>
         </>) : (<></>)
