@@ -8,7 +8,8 @@ import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
 import Actualizar from './actualizar'
-const EmpresasProductos = ({ empresasData,ramosData }) => {
+import Insertar from "./insertar"
+const EmpresasProductos = ({ empresasData, ramosData }) => {
     const [empresasProductos, setEmpresasProductos] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const leer = async () => {
@@ -26,7 +27,6 @@ const EmpresasProductos = ({ empresasData,ramosData }) => {
         }
         return nombre || ramo || nombre_empresa
     })
-
     const columns = [
         {
             name: '#',
@@ -56,7 +56,7 @@ const EmpresasProductos = ({ empresasData,ramosData }) => {
         },
         {
             name: 'Comisión',
-            selector: row => row.comision,
+            selector: row => "% " + row.comision,
             width: '10%',
         },
         {
@@ -89,8 +89,6 @@ const EmpresasProductos = ({ empresasData,ramosData }) => {
     useEffect(() => {
         leer()
     }, [actualizar])
-
-
     return (
         <>
             <Container>
@@ -128,9 +126,9 @@ const EmpresasProductos = ({ empresasData,ramosData }) => {
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData}/>,
+                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
-                        // "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
+                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />
                     }[accion]}
                 </Modal.Body>
             </Modal>
@@ -140,14 +138,13 @@ const EmpresasProductos = ({ empresasData,ramosData }) => {
 export async function getServerSideProps() {
     const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
     const empresasResponse = await empresasFetch.json()
-
     const ramosFetch = await fetch(`${process.env.URL}/api/ramos/`)
     const ramosResponse = await ramosFetch.json()
-    return { 
-        props: { 
-            empresasData: empresasResponse.message ,
+    return {
+        props: {
+            empresasData: empresasResponse.message,
             ramosData: ramosResponse.message
-        } 
+        }
     }
 }
 export default EmpresasProductos

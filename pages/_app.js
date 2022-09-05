@@ -2,7 +2,7 @@ import '../styles/globals.scss'
 import '../styles/menu.scss'
 import { slide as Menu } from 'react-burger-menu'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-
+import Link from 'next/link'
 const MyApp = ({ Component, pageProps }) => {
   const theme = createTheme({
     palette: {
@@ -24,12 +24,21 @@ const MyApp = ({ Component, pageProps }) => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        {/* <Menu>
-        <a id="home" className="menu-item" href="/">Home</a>
-        <a id="about" className="menu-item" href="/about">About</a>
-        <a id="contact" className="menu-item" href="/contact">Contact</a>
-        <a className="menu-item--small" href="">Settings</a>
-      </Menu> */}
+        <Menu>
+    
+        <Link href="/" >
+          <a  className='bm-item'>Inicio</a>
+        </Link>
+        <Link href="/usuarios" >
+          <a  className='bm-item'>Usuarios</a>
+        </Link>
+        <Link href="/empresas" >
+          <a className='bm-item'>Compañias</a>
+        </Link>
+        <Link href="/empresasproductos" >
+          <a className='bm-item'>Productos Compañias</a>
+        </Link>
+      </Menu>
         <Component {...pageProps} />
       </ThemeProvider>
     </>

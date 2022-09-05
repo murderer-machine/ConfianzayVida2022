@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { styleButton } from '../../styles/globals'
 import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { TextField, Button, Alert } from '@mui/material'
@@ -26,7 +26,7 @@ const Actualizar = ({ data, cerrar, actualizar, empresasData, ramosData }) => {
         setResponse(data)
         if (data.response) {
             actualizar()
-            // cerrar()
+            cerrar()
             setSpinner(false)
             return
         } else {
@@ -34,7 +34,7 @@ const Actualizar = ({ data, cerrar, actualizar, empresasData, ramosData }) => {
             return
         }
     }
-    
+
     const ResponseArray = () => {
         return (
             (response.message).map((element, index) => (
@@ -92,38 +92,36 @@ const Actualizar = ({ data, cerrar, actualizar, empresasData, ramosData }) => {
                         />
                         <TextField className="mb-2" id="outlined-basic" name="comision" label="Comision" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.comision} sx={styleButton} />
                     </Col>
-                    {JSON.stringify(dataInputs)}
                     <Col xs={12} lg={12}>
-                    {Object.keys(response).length > 0 ? (<>
-                        <Alert severity={response.response ? 'success' : 'error'}>
-                            {{
-                                "string": <><b>* </b>{response.message}</>,
-                                "object": <ResponseArray></ResponseArray>
-                            }[typeof response.message]}
-                        </Alert>
-                    </>) : (<></>)}
-                </Col>
+                        {Object.keys(response).length > 0 ? (<>
+                            <Alert severity={response.response ? 'success' : 'error'}>
+                                {{
+                                    "string": <><b>* </b>{response.message}</>,
+                                    "object": <ResponseArray></ResponseArray>
+                                }[typeof response.message]}
+                            </Alert>
+                        </>) : (<></>)}
+                    </Col>
                     <Col xs={12}>
-                    <Modal.Footer>
-                        <Button variant="contained" color="primary" size="small" disabled={spinner ? true : false} onClick={editar}>
-                            {spinner ? (<>
-                                <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                            </>) : (<></>)} Guardar</Button>
-                        <Button variant="contained" color="secondary" size="small" onClick={cerrar}>Cerrar</Button>
-                    </Modal.Footer>
-                </Col>
+                        <Modal.Footer>
+                            <Button variant="contained" color="primary" size="small" disabled={spinner ? true : false} onClick={editar}>
+                                {spinner ? (<>
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                </>) : (<></>)} Guardar</Button>
+                            <Button variant="contained" color="secondary" size="small" onClick={cerrar}>Cerrar</Button>
+                        </Modal.Footer>
+                    </Col>
                 </Row>
             </Container>
         </>) : (<></>)
     )
 }
-
 Actualizar.defaultProps = {
     data: {},
     cerrar: () => { },

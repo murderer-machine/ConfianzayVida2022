@@ -32,7 +32,6 @@ const Insertar = ({ data, cerrar, actualizar }) => {
             })
         const data = await response.json()
         setResponse(data)
-        console.log(data)
         if (data.response) {
             actualizar()
             cerrar()
@@ -85,7 +84,8 @@ const Insertar = ({ data, cerrar, actualizar }) => {
                                 />
                             )}
                         />
-                    </Col>
+                    </Col>      
+                    {JSON.stringify(dataInputs)}             
                     <Col xs={12} lg={12}>
                         {Object.keys(response).length > 0 ? (<>
                             <Alert severity={response.response ? 'success' : 'error'}>
