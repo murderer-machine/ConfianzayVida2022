@@ -38,6 +38,9 @@ const MyApp = ({ Component, pageProps }) => {
         <Link href="/empresasproductos" >
           <a className='bm-item'>Productos Compañias</a>
         </Link>
+        <Link href="/polizas" >
+          <a className='bm-item'>Polizas</a>
+        </Link>
       </Menu>
         <Component {...pageProps} />
       </ThemeProvider>

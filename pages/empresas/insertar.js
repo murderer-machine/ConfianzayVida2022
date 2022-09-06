@@ -67,7 +67,7 @@ const Insertar = ({ data, cerrar, actualizar }) => {
                             size="small"
                             options={opcionesSelectActivo}
                             getOptionLabel={(option) => option.label}
-                            value={opcionesSelectActivo.find(o => o.valor === dataInputs.activo)}
+                            value={opcionesSelectActivo.filter(o => o.valor === dataInputs.activo)}
                             onChange={(event, value) => {
                                 setDataInputs(values => ({ ...values, activo: value == null ? '' : value.valor }))
                             }}
@@ -84,8 +84,7 @@ const Insertar = ({ data, cerrar, actualizar }) => {
                                 />
                             )}
                         />
-                    </Col>      
-                    {JSON.stringify(dataInputs)}             
+                    </Col>                  
                     <Col xs={12} lg={12}>
                         {Object.keys(response).length > 0 ? (<>
                             <Alert severity={response.response ? 'success' : 'error'}>

@@ -67,7 +67,7 @@ const Actualizar = ({ data, cerrar, actualizar }) => {
                             size="small"
                             options={opcionesSelectActivo}
                             getOptionLabel={(option) => option.label}
-                            value={opcionesSelectActivo.find(o => o.valor === dataInputs.activo)}
+                            value={opcionesSelectActivo.filter(o => o.valor === dataInputs.activo)}
                             onChange={(event, value) => {
                                 setDataInputs(values => ({ ...values, activo: value == null ? '' : value.valor }))
                             }}

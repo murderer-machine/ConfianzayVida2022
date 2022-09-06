@@ -50,10 +50,18 @@ const Insertar = ({ empresasData, ramosData, cerrar, actualizar }) => {
                         className="mb-2"
                         size="small"
                         options={empresasData}
-                        value={empresasData.find(o => o.id === dataInputs.empresasSeguroId)}
+                        value={empresasData?.find(o => o.id === dataInputs.empresasSeguroId)}
                         getOptionLabel={(option) => `${option.nombre}`}
                         onChange={(event, value) => {
-                            setDataInputs(values => ({ ...values, empresasSeguroId: value == null ? '' : value.id }))
+                            if (value) {
+                                setDataInputs(values => ({ ...values, empresasSeguroId: value.id }))
+                            } else {
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.empresasSeguroId
+                                    return copy
+                                })
+                            }
                         }}
                         noOptionsText="No se encontraron resultados"
                         renderInput={(params) => (
@@ -71,10 +79,18 @@ const Insertar = ({ empresasData, ramosData, cerrar, actualizar }) => {
                         className="mb-2"
                         size="small"
                         options={ramosData}
-                        value={ramosData.find(o => o.id === dataInputs.ramoId)}
+                        value={ramosData?.find(o => o.id === dataInputs.ramoId)}
                         getOptionLabel={(option) => `${option.descripcion}`}
                         onChange={(event, value) => {
-                            setDataInputs(values => ({ ...values, ramoId: value == null ? '' : value.id }))
+                            if (value) {
+                                setDataInputs(values => ({ ...values, ramoId: value.id }))
+                            } else {
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.ramoId
+                                    return copy
+                                })
+                            }
                         }}
                         noOptionsText="No se encontraron resultados"
                         renderInput={(params) => (
@@ -100,6 +116,9 @@ const Insertar = ({ empresasData, ramosData, cerrar, actualizar }) => {
                         </Alert>
                     </>) : (<></>)}
                 </Col>
+                {/* <Col xs={12} lg={12}>
+                    {JSON.stringify(dataInputs)}
+                </Col> */}
                 <Col xs={12}>
                     <Modal.Footer>
                         <Button variant="contained" color="primary" size="small" disabled={spinner ? true : false} onClick={insertar}>
