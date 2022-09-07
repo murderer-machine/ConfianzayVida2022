@@ -4,7 +4,7 @@ import Insertar from "./insertar"
 import { styleButton } from '../../styles/globals'
 import { TextField, Button } from '@mui/material'
 import { MdOutlineAddCircle } from 'react-icons/md'
-const Polizas = ({ empresasData,empresasProductosData }) => {
+const Polizas = ({ empresasData, empresasProductosData, monedasData, clientesData }) => {
     const [modalAcciones, setModalAcciones] = useState(false)
     const [accion, setAccion] = useState('')
     const [dataAccion, setDataAccion] = useState('')
@@ -25,7 +25,7 @@ const Polizas = ({ empresasData,empresasProductosData }) => {
                     </Col>
                 </Row>
             </Container>
-            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} >
+            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} size="xl">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {{
@@ -35,7 +35,13 @@ const Polizas = ({ empresasData,empresasProductosData }) => {
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "insertar": <Insertar cerrar={handleCloseModalAcciones} empresasData={empresasData} empresasProductosData={empresasProductosData}/>
+                        "insertar": <Insertar
+                            cerrar={handleCloseModalAcciones}
+                            empresasData={empresasData}
+                            empresasProductosData={empresasProductosData}
+                            monedasData={monedasData}
+                            clientesData={clientesData}
+                        />
                     }[accion]}
                 </Modal.Body>
             </Modal>
@@ -44,15 +50,23 @@ const Polizas = ({ empresasData,empresasProductosData }) => {
 }
 export async function getServerSideProps() {
     const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
-    const empresasResponse = await empresasFetch.json() 
+    const empresasResponse = await empresasFetch.json()
 
     const empresasProductosFetch = await fetch(`${process.env.URL}/api/empresasProductos/`)
     const empresasProductosResponse = await empresasProductosFetch.json()
 
+    const monedasfetch = await fetch(`${process.env.URL}/api/monedas/`)
+    const monedasResponse = await monedasfetch.json()
+
+    const clientesfetch = await fetch(`${process.env.URL}/api/clientes/`)
+    const clientesResponse = await clientesfetch.json()
+
     return {
         props: {
             empresasData: empresasResponse.message,
-            empresasProductosData: empresasProductosResponse.message
+            empresasProductosData: empresasProductosResponse.message,
+            monedasData: monedasResponse.message,
+            clientesData: clientesResponse.message,
         }
     }
 }

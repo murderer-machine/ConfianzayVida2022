@@ -3,21 +3,29 @@ import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { TextField, Button, Alert } from '@mui/material'
 import { styleButton } from '../../styles/globals'
 import Autocomplete from '@mui/material/Autocomplete'
-const Insertar = ({ cerrar, empresasData, empresasProductosData }) => {
+const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,clientesData }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
     const handleChange = (event) => {
         const name = event.target.name
         const value = event.target.value
-        setDataInputs(values => ({ ...values, [name]: value.toLowerCase() }))
+        if (value) {
+            setDataInputs(values => ({ ...values, [name]: value.toLowerCase() }))
+        } else {
+            setDataInputs(values => {
+                const copy = { ...values }
+                delete copy[name]
+                return copy
+            })
+        }
+
     }
     const [autoCompleteValues, setAutoCompleteValues] = useState({
         empresa: null,
-        producto: null
+        producto: null,
+        moneda: null,
+        cliente: null
     })
-
-
-
     return (
         <Container>
             <Row>
@@ -26,17 +34,24 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData }) => {
                         className="mb-2"
                         size="small"
                         options={empresasData ? empresasData : []}
-                        getOptionLabel={(option) => `${option.nombre}`}
+                        getOptionLabel={(option) => `${option.nombre.toUpperCase()}`}
                         onChange={(event, value) => {
                             if (value) {
                                 setAutoCompleteValues(values => ({ ...values, empresa: value }))
                                 setDataInputs(values => ({ ...values, empresasSeguroId: value.id }))
                             } else {
-                                setAutoCompleteValues(values => ({ ...values, empresa: null }))
+                                setAutoCompleteValues(values => ({
+                                    ...values,
+                                    empresa: null,
+                                    producto: null,
+                                    moneda: null,
+                                }))
                                 setDataInputs(values => {
                                     const copy = { ...values }
                                     delete copy.empresasSeguroId
                                     delete copy.empresasProductosId
+                                    delete copy.ramoId
+                                    delete copy.moneda
                                     return copy
                                 })
                             }
@@ -58,16 +73,21 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData }) => {
                         className="mb-2"
                         size="small"
                         options={empresasProductosData.filter(item => item.empresasSeguroId == dataInputs.empresasSeguroId)}
-                        getOptionLabel={(option) => `${option.nombre}`}
+                        getOptionLabel={(option) => `${option.nombre.toUpperCase()}`}
                         onChange={(event, value) => {
                             if (value) {
                                 setAutoCompleteValues(values => ({ ...values, producto: value }))
-                                setDataInputs(values => ({ ...values, empresasProductosId: value.id }))
+                                setDataInputs(values => ({
+                                    ...values,
+                                    empresasProductosId: value.id,
+                                    ramoId: value.ramo.id
+                                }))
                             } else {
                                 setAutoCompleteValues(values => ({ ...values, producto: null }))
                                 setDataInputs(values => {
                                     const copy = { ...values }
                                     delete copy.empresasProductosId
+                                    delete copy.ramoId
                                     return copy
                                 })
                             }
@@ -85,9 +105,73 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData }) => {
                             />
                         )}
                     />
-                    <TextField className="mb-2" id="outlined-basic" name="nombre" label="Nombre" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nombre} sx={styleButton} />
-                    {JSON.stringify(autoCompleteValues)}
-                    {JSON.stringify(dataInputs)}
+                    <div className="mb-2"><b>Ramo : </b>{dataInputs.ramoId ? (autoCompleteValues?.producto.ramo.descripcion).toUpperCase() : ''}</div>
+                    <Autocomplete
+                        className="mb-2"
+                        size="small"
+                        options={monedasData ? monedasData : []}
+                        getOptionLabel={(option) => `${option.simbolo} - ${(option.descripcion).toUpperCase()}`}
+                        onChange={(event, value) => {
+                            if (value) {
+                                setAutoCompleteValues(values => ({ ...values, moneda: value }))
+                                setDataInputs(values => ({ ...values, moneda: value.id }))
+                            } else {
+                                setAutoCompleteValues(values => ({ ...values, moneda: null }))
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.moneda
+                                    return copy
+                                })
+                            }
+                        }}
+                        value={autoCompleteValues.moneda}
+                        noOptionsText="No se encontraron resultados"
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                fullWidth
+                                label="Seleccione Moneda"
+                                inputProps={{
+                                    ...params.inputProps,
+                                }}
+                            />
+                        )}
+                    />
+                    <TextField className="mb-2" id="outlined-basic" name="nroPoliza" label="Nro Poliza" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nroPoliza} sx={styleButton} />
+                    <TextField className="mb-2" id="outlined-basic" name="nroPolizaCorregido" label="Nro Poliza Corregido" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nroPolizaCorregido} sx={styleButton} />
+                    <Autocomplete
+                        className="mb-2"
+                        size="small"
+                        options={clientesData ? clientesData : []}
+                        getOptionLabel={(option) => `${option.nombre.toUpperCase()} ${option.nroDoc}`}
+                        onChange={(event, value) => {
+                            if (value) {
+                                setAutoCompleteValues(values => ({ ...values, cliente: value }))
+                                setDataInputs(values => ({ ...values, clienteId : value.id }))
+                            } else {
+                                setAutoCompleteValues(values => ({ ...values, cliente: null }))
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.clienteId 
+                                    return copy
+                                })
+                            }
+                        }}
+                        value={autoCompleteValues.cliente}
+                        noOptionsText="No se encontraron resultados"
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                fullWidth
+                                label="Seleccione Cliente"
+                                inputProps={{
+                                    ...params.inputProps,
+                                }}
+                            />
+                        )}
+                    />
+                    {/* {JSON.stringify(autoCompleteValues)}
+                    {JSON.stringify(dataInputs)} */}
                 </Col>
                 <Col xs={12}>
                     <Modal.Footer>
