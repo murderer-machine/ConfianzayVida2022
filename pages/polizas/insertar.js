@@ -3,7 +3,7 @@ import { Container, Row, Col, Modal, Spinner } from 'react-bootstrap'
 import { TextField, Button, Alert } from '@mui/material'
 import { styleButton } from '../../styles/globals'
 import Autocomplete from '@mui/material/Autocomplete'
-const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,clientesData }) => {
+const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData, clientesData, empresasBancariasData }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
     const handleChange = (event) => {
@@ -24,7 +24,8 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
         empresa: null,
         producto: null,
         moneda: null,
-        cliente: null
+        cliente: null,
+        empresa_bancaria: null
     })
     return (
         <Container>
@@ -45,6 +46,7 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
                                     empresa: null,
                                     producto: null,
                                     moneda: null,
+                                    empresa_bancaria: null
                                 }))
                                 setDataInputs(values => {
                                     const copy = { ...values }
@@ -52,6 +54,7 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
                                     delete copy.empresasProductosId
                                     delete copy.ramoId
                                     delete copy.moneda
+                                    delete copy.endosoAfavor
                                     return copy
                                 })
                             }
@@ -138,7 +141,6 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
                         )}
                     />
                     <TextField className="mb-2" id="outlined-basic" name="nroPoliza" label="Nro Poliza" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nroPoliza} sx={styleButton} />
-                    <TextField className="mb-2" id="outlined-basic" name="nroPolizaCorregido" label="Nro Poliza Corregido" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.nroPolizaCorregido} sx={styleButton} />
                     <Autocomplete
                         className="mb-2"
                         size="small"
@@ -147,12 +149,12 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
                         onChange={(event, value) => {
                             if (value) {
                                 setAutoCompleteValues(values => ({ ...values, cliente: value }))
-                                setDataInputs(values => ({ ...values, clienteId : value.id }))
+                                setDataInputs(values => ({ ...values, clienteId: value.id }))
                             } else {
                                 setAutoCompleteValues(values => ({ ...values, cliente: null }))
                                 setDataInputs(values => {
                                     const copy = { ...values }
-                                    delete copy.clienteId 
+                                    delete copy.clienteId
                                     return copy
                                 })
                             }
@@ -170,8 +172,40 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
                             />
                         )}
                     />
-                    {/* {JSON.stringify(autoCompleteValues)}
-                    {JSON.stringify(dataInputs)} */}
+                    <TextField className="mb-2" id="outlined-basic" name="descripcion" label="Descripcion" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.descripcion} sx={styleButton} />
+                    <Autocomplete
+                        className="mb-2"
+                        size="small"
+                        options={empresasBancariasData ? empresasBancariasData : []}
+                        getOptionLabel={(option) => `${option.nombre.toUpperCase()}`}
+                        onChange={(event, value) => {
+                            if (value) {
+                                setAutoCompleteValues(values => ({ ...values, empresa_bancaria: value }))
+                                setDataInputs(values => ({ ...values, endosoAfavor: value.id }))
+                            } else {
+                                setAutoCompleteValues(values => ({ ...values, empresa_bancaria: null }))
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.endosoAfavor
+                                    return copy
+                                })
+                            }
+                        }}
+                        value={autoCompleteValues.empresa_bancaria}
+                        noOptionsText="No se encontraron resultados"
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                fullWidth
+                                label="Seleccione Empresa Bancaria"
+                                inputProps={{
+                                    ...params.inputProps,
+                                }}
+                            />
+                        )}
+                    />
+                    {JSON.stringify(dataInputs)}
+
                 </Col>
                 <Col xs={12}>
                     <Modal.Footer>
@@ -191,5 +225,12 @@ const Insertar = ({ cerrar, empresasData, empresasProductosData, monedasData,cli
             </Row>
         </Container>
     )
+}
+Insertar.defaultProps = {
+    cerrar: () => { },
+    empresasData: [],
+    empresasProductosData: [],
+    monedasData: [],
+    clientesData: [],
 }
 export default Insertar
