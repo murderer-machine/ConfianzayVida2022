@@ -7,25 +7,20 @@ import { BsFillTrashFill } from 'react-icons/bs'
 import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
-import Actualizar from './actualizar'
-import Insertar from "./insertar"
-const EmpresasProductos = ({ empresasData, ramosData }) => {
-    const [empresasProductos, setEmpresasProductos] = useState([])
+import Insertar from './insertar'
+const PuntosVentas = () => {
+    const [puntosVentas, setPuntosVentas] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const leer = async () => {
-        const response = await fetch(`${process.env.URL}/api/empresasSegurosProductos/`)
+        const response = await fetch(`${process.env.URL}/api/puntosVentas/`)
         const data = await response.json()
-        setEmpresasProductos(data.message)
+        setPuntosVentas(data.message)
     }
-    const leerFiltrado = empresasProductos.filter(e => {
-        var nombre = e.nombre.includes(busqueda)
-        if (Object.keys(e.empresas_seguro).length > 0) {
-            var nombre_empresa = e.empresas_seguro.nombre.includes(busqueda)
-        }
-        if (Object.keys(e.ramo).length > 0) {
-            var ramo = e.ramo.descripcion.includes(busqueda)
-        }
-        return nombre || ramo || nombre_empresa
+    const leerFiltrado = puntosVentas.filter(e => {
+        var nombres = e.nombres.includes(busqueda)
+        var apellidos = e.apellidos.includes(busqueda)
+        var abreviatura = e.abreviatura.includes(busqueda)
+        return nombres || apellidos || abreviatura
     })
     const columns = [
         {
@@ -35,29 +30,37 @@ const EmpresasProductos = ({ empresasData, ramosData }) => {
             width: '5%',
         },
         {
-            name: 'Nombre',
-            selector: row => row.nombre.toUpperCase(),
+            name: 'Nombres',
+            selector: row => (
+                <div className="my-2"> 
+                    <b>Nombres : </b>{row.nombres.toUpperCase()}<br />
+                    <b>Apellidos : </b>{row.apellidos.toUpperCase()}<br />
+                    <b>Abreviatura : </b>{row.abreviatura.toUpperCase()}
+                </div>),
+            sortable: true,
+        },
+        {
+            name: '#',
+            selector: row => (
+                <div className="my-2">
+                    <b>Direccion : </b>{row.direccion.toUpperCase()}<br />
+                    <b>Referencia : </b>{row.referencia.toUpperCase()}<br />
+                    <b>Ubigeo : </b>{row.ubigeo.departamento.toUpperCase()} - {row.ubigeo.provincia.toUpperCase()} - {row.ubigeo.distrito.toUpperCase()}
+                </div>),
             sortable: true,
             wrap: true,
-            width: '30%',
         },
         {
-            name: 'Compañia',
-            selector: row => <img src={`${process.env.URLIMAGENES}/${row.empresas_seguro.logo}`} height={20} />,
-            width: '10%',
-            wrap: true,
-        },
-        {
-            name: 'Ramo',
-            selector: row => row.ramo.descripcion.toUpperCase(),
+            name: '#',
+            selector: row => row.comision,
             sortable: true,
-            width: '25%',
-            wrap: true,
+            width: '5%',
         },
         {
-            name: 'Comisión',
-            selector: row => "% " + row.comision,
-            width: '10%',
+            name: '#',
+            selector: row => row.observaciones,
+            sortable: true,
+            wrap: true,
         },
         {
             name: 'Editar',
@@ -69,6 +72,7 @@ const EmpresasProductos = ({ empresasData, ramosData }) => {
             selector: row => <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalAcciones('eliminar', row) }}><BsFillTrashFill /></Button>,
             width: '9%',
         },
+
     ]
     const [accion, setAccion] = useState('')
     const [dataAccion, setDataAccion] = useState('')
@@ -103,7 +107,7 @@ const EmpresasProductos = ({ empresasData, ramosData }) => {
                             data={leerFiltrado}
                             dense
                             pagination
-                            title="Modulo de Productos"
+                            title="Puntos de Ventas"
                             striped
                             noDataComponent={<div>No se encontraron registros</div>}
                             paginationPerPage={50}
@@ -119,32 +123,32 @@ const EmpresasProductos = ({ empresasData, ramosData }) => {
                     <Modal.Title>
                         {{
                             "editar": "Actualizar Empresa",
-                            "eliminar": "Eliminar Empresa",
+                            "eliminar": "Eliminar Punto de Venta",
                             "insertar": "Insertar Empresa"
                         }[accion]}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {{
-                        "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
+                        // "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
-                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />
+                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
                     }[accion]}
                 </Modal.Body>
             </Modal>
         </>
     )
 }
-export async function getServerSideProps() {
-    const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
-    const empresasResponse = await empresasFetch.json()
-    const ramosFetch = await fetch(`${process.env.URL}/api/ramos/`)
-    const ramosResponse = await ramosFetch.json()
-    return {
-        props: {
-            empresasData: empresasResponse.message,
-            ramosData: ramosResponse.message
-        }
-    }
-}
-export default EmpresasProductos
+// export async function getServerSideProps() {
+//     const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
+//     const empresasResponse = await empresasFetch.json()
+//     const ramosFetch = await fetch(`${process.env.URL}/api/ramos/`)
+//     const ramosResponse = await ramosFetch.json()
+//     return {
+//         props: {
+//             empresasData: empresasResponse.message,
+//             ramosData: ramosResponse.message
+//         }
+//     }
+// }
+export default PuntosVentas
