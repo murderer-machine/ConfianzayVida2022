@@ -4,7 +4,7 @@ import { TextField, Button, Alert } from '@mui/material'
 import { styleButton } from '../../styles/globals'
 import Autocomplete from '@mui/material/Autocomplete'
 import { useEffect } from "react"
-import moment from 'moment'
+
 const Insertar = ({ cerrar, actualizar }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
@@ -51,10 +51,10 @@ const Insertar = ({ cerrar, actualizar }) => {
             ))
         )
     }
-    useEffect (() => {
-        setDataInputs(values => ({...values, fecha_activacion: moment().format('YYYY-MM-DD')}))
-        setDataInputs(values => ({...values, usuarioId: 0}))
-    }, [])
+    // useEffect (() => {
+    //     setDataInputs(values => ({...values, fecha_activacion: moment().format('YYYY-MM-DD')}))
+    //     setDataInputs(values => ({...values, usuarioId: 0}))
+    // }, [])
     return (
         <Container>
             <Row>
