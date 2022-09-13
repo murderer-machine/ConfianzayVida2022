@@ -5,7 +5,7 @@ import { styleButton } from '../../styles/globals'
 import Autocomplete from '@mui/material/Autocomplete'
 import { useEffect } from "react"
 
-const Insertar = ({ cerrar, actualizar }) => {
+const Insertar = ({ cerrar, actualizar, ubigeosData }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
     const handleChange = (event) => {
@@ -51,10 +51,9 @@ const Insertar = ({ cerrar, actualizar }) => {
             ))
         )
     }
-    // useEffect (() => {
-    //     setDataInputs(values => ({...values, fecha_activacion: moment().format('YYYY-MM-DD')}))
-    //     setDataInputs(values => ({...values, usuarioId: 0}))
-    // }, [])
+    const [autoCompleteValues, setAutoCompleteValues] = useState({
+        ubigeoId: null,
+    })
     return (
         <Container>
             <Row>
@@ -64,9 +63,39 @@ const Insertar = ({ cerrar, actualizar }) => {
                     <TextField className="mb-2" id="outlined-basic" name="abreviatura" label="Abreviatura" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.abreviatura} sx={styleButton} />
                     <TextField className="mb-2" id="outlined-basic" name="direccion" label="Direccion" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.direccion} sx={styleButton} />
                     <TextField className="mb-2" id="outlined-basic" name="referencia" label="Referencia" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.referencia} sx={styleButton} />
-                    <TextField className="mb-2" id="outlined-basic" name="ubigeoId" label="Ubigeo" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.ubigeoId} sx={styleButton} />
+                    <Autocomplete
+                        className="mb-2"
+                        size="small"
+                        options={ubigeosData ? ubigeosData : []}
+                        getOptionLabel={(option) => `${option.departamento.toUpperCase()} - ${option.provincia.toUpperCase()} - ${option.distrito.toUpperCase()}`}
+                        onChange={(event, value) => {
+                            if (value) {
+                                setAutoCompleteValues(values => ({ ...values, ubigeoId: value }))
+                                setDataInputs(values => ({ ...values, ubigeoId: value.id }))
+                            } else {
+                                setAutoCompleteValues(values => ({ ...values, ubigeoId: null }))
+                                setDataInputs(values => {
+                                    const copy = { ...values }
+                                    delete copy.ubigeoId
+                                    return copy
+                                })
+                            }
+                        }}
+                        value={autoCompleteValues.ubigeoId}
+                        noOptionsText="No se encontraron resultados"
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                fullWidth
+                                label="Seleccione Ubigeo"
+                                inputProps={{
+                                    ...params.inputProps,
+                                }}
+                            />
+                        )}
+                    />
                     <TextField className="mb-2" id="outlined-basic" name="comision" label="Comision" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.comision} sx={styleButton} />
-                    <TextField className="mb-2" id="outlined-basic" name="observaciones" label="Observaciones" variant="outlined" size="small" fullWidth onChange={handleChange} value={dataInputs.observaciones} sx={styleButton} />
+                    <TextField className="mb-2" id="outlined-basic" name="observaciones" label="Observaciones" variant="outlined" size="small" fullWidth onChange={handleChange} sx={styleButton} value={dataInputs.observaciones} multiline rows={4}/>
                 </Col>
                 <Col xs={12} lg={12}>
                     {Object.keys(response).length > 0 ? (<>
@@ -78,8 +107,10 @@ const Insertar = ({ cerrar, actualizar }) => {
                         </Alert>
                     </>) : (<></>)}
                 </Col>
-                <Col xs={12} lg={12}>
+                <Col>
+                <code>
                     {JSON.stringify(dataInputs)}
+                </code>
                 </Col>
                 <Col xs={12}>
                     <Modal.Footer>

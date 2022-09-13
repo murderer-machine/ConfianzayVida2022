@@ -50,8 +50,8 @@ const Insertar = ({ empresasData, ramosData, cerrar, actualizar }) => {
                         className="mb-2"
                         size="small"
                         options={empresasData}
-                        value={empresasData?.find(o => o.id === dataInputs.empresasSeguroId)}
-                        getOptionLabel={(option) => `${option.nombre}`}
+                        value={empresasData?.find(o => o.id === dataInputs.ubigeoId)}
+                        getOptionLabel={(option) => `${option.deparmaneto} - ${option.provincia} - ${option.distrito}`}
                         onChange={(event, value) => {
                             if (value) {
                                 setDataInputs(values => ({ ...values, empresasSeguroId: value.id }))

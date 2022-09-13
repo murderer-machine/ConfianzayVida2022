@@ -8,7 +8,7 @@ import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
 import Insertar from './insertar'
-const PuntosVentas = () => {
+const PuntosVentas = ({ ubigeosData }) => {
     const [puntosVentas, setPuntosVentas] = useState([])
     const [busqueda, setBusqueda] = useState('')
     const leer = async () => {
@@ -32,7 +32,7 @@ const PuntosVentas = () => {
         {
             name: 'Nombres',
             selector: row => (
-                <div className="my-2"> 
+                <div className="my-2">
                     <b>Nombres : </b>{row.nombres.toUpperCase()}<br />
                     <b>Apellidos : </b>{row.apellidos.toUpperCase()}<br />
                     <b>Abreviatura : </b>{row.abreviatura.toUpperCase()}
@@ -124,7 +124,7 @@ const PuntosVentas = () => {
                         {{
                             "editar": "Actualizar Empresa",
                             "eliminar": "Eliminar Punto de Venta",
-                            "insertar": "Insertar Empresa"
+                            "insertar": "Insertar Punto de Venta"
                         }[accion]}
                     </Modal.Title>
                 </Modal.Header>
@@ -132,23 +132,20 @@ const PuntosVentas = () => {
                     {{
                         // "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
-                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
+                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} ubigeosData={ubigeosData} />
                     }[accion]}
                 </Modal.Body>
             </Modal>
         </>
     )
 }
-// export async function getServerSideProps() {
-//     const empresasFetch = await fetch(`${process.env.URL}/api/empresasSeguros/`)
-//     const empresasResponse = await empresasFetch.json()
-//     const ramosFetch = await fetch(`${process.env.URL}/api/ramos/`)
-//     const ramosResponse = await ramosFetch.json()
-//     return {
-//         props: {
-//             empresasData: empresasResponse.message,
-//             ramosData: ramosResponse.message
-//         }
-//     }
-// }
+export async function getServerSideProps() {
+    const ubigeosFetch = await fetch(`${process.env.URL}/api/ubigeos/`)
+    const ubigeosResponse = await ubigeosFetch.json()
+    return {
+        props: {
+            ubigeosData: ubigeosResponse.message,
+        }
+    }
+}
 export default PuntosVentas
