@@ -5,6 +5,7 @@ import { styleButton } from '../../styles/globals'
 import Autocomplete from '@mui/material/Autocomplete'
 import { useEffect } from "react"
 import IsertarContacto from './insertarContactos'
+
 const Insertar = ({ cerrar, actualizar, ubigeosData }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
@@ -56,11 +57,7 @@ const Insertar = ({ cerrar, actualizar, ubigeosData }) => {
     const [autoCompleteValues, setAutoCompleteValues] = useState({
         ubigeoId: null,
     })
-    const llamarContactos = async (value) => {
-        var response = await fetch(`${process.env.URL}/api/puntosVentasContactos/${idResponse}`)
-        var data = await response.json()
-        setDataContactos(data.message)
-    }
+  
     return (
         <Container>
             <Row>

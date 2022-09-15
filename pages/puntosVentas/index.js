@@ -118,7 +118,7 @@ const PuntosVentas = ({ ubigeosData }) => {
                     </Col>
                 </Row>
             </Container>
-            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} >
+            <Modal show={modalAcciones} onHide={handleCloseModalAcciones} size="xl">
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {{
