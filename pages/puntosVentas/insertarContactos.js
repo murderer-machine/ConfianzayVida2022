@@ -7,6 +7,7 @@ import { MdContactPhone } from 'react-icons/md'
 import { MdOutlineMail } from 'react-icons/md'
 import { MdOutlinePhoneIphone } from 'react-icons/md'
 import { RiContactsLine } from 'react-icons/ri'
+import { BsFillTrashFill } from 'react-icons/bs'
 const Insertar = ({ id }) => {
     const [dataInputs, setDataInputs] = useState({})
     const [spinner, setSpinner] = useState(false)
@@ -99,6 +100,7 @@ const Insertar = ({ id }) => {
                                 <b><RiContactsLine /> {e.nombres_apellidos.toUpperCase()}</b><br />
                                 <b><MdOutlinePhoneIphone /> {e.celular}</b><br />
                                 <b><MdOutlineMail /> {e.correo}</b><br />
+                                <Button variant="contained" color="error" size="small" onClick={() => { alert(e.id) }}><BsFillTrashFill /></Button>
                             </Alert>
                         </Col>
                     ))}
