@@ -12,8 +12,7 @@ const App = () => {
     }
     socket.on('message', messageListener)
     return () => {
-      socket.off('message', messageListener);
-
+      socket.off('message', messageListener)
     }
   }, [socket])
 
