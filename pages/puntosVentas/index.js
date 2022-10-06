@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react"
 import DataTable from 'react-data-table-component'
-import { TextField, Button } from '@mui/material'
-import { Container, Row, Col, Alert, Badge, Modal } from 'react-bootstrap'
+import { TextField, Button, Alert } from '@mui/material'
+import { Container, Row, Col, Badge, Modal } from 'react-bootstrap'
 import { ImPencil } from 'react-icons/im'
 import { BsFillTrashFill } from 'react-icons/bs'
 import { MdOutlineAddCircle } from 'react-icons/md'
 import { styleButton } from '../../styles/globals'
 import Eliminar from './eliminar'
 import Insertar from './insertar'
+import { MdContactPhone } from 'react-icons/md'
+import { RiContactsLine } from 'react-icons/ri'
+import { MdOutlinePhoneIphone } from 'react-icons/md'
+import { MdOutlineMail } from 'react-icons/md'
+import EliminarContacto from "./eliminarContacto"
 const PuntosVentas = ({ ubigeosData }) => {
     const [puntosVentas, setPuntosVentas] = useState([])
     const [busqueda, setBusqueda] = useState('')
@@ -72,7 +77,6 @@ const PuntosVentas = ({ ubigeosData }) => {
             selector: row => <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalAcciones('eliminar', row) }}><BsFillTrashFill /></Button>,
             width: '9%',
         },
-
     ]
     const [accion, setAccion] = useState('')
     const [dataAccion, setDataAccion] = useState('')
@@ -86,13 +90,31 @@ const PuntosVentas = ({ ubigeosData }) => {
     const handleCloseModalAcciones = () => {
         setModalAcciones(false)
     }
-
     const actualizarFn = () => {
         setActualizar(!actualizar)
     }
     useEffect(() => {
         leer()
     }, [actualizar])
+    const ExpandedComponent = ({ data }) => {
+        const { puntos_ventas_contactos } = data
+        return (
+            <Container>
+                <Row>
+                    {puntos_ventas_contactos.map((e, i) => (
+                        <Col xs={4} key={i} className="mt-2">
+                            <Alert severity="info" key={i} icon={<MdContactPhone />} className="mb-2" variant="outlined">
+                                <b><RiContactsLine /> {e.nombres_apellidos.toUpperCase()}</b><br />
+                                <b><MdOutlinePhoneIphone /> {e.celular}</b><br />
+                                <b><MdOutlineMail /> {e.correo}</b><br />
+                                <Button variant="contained" color="error" size="small" onClick={() => { handleShowModalAcciones('eliminarContacto', e) }}><BsFillTrashFill /></Button>
+                            </Alert>
+                        </Col>
+                    ))}
+                </Row>
+            </Container>
+        )
+    }
     return (
         <>
             <Container>
@@ -114,7 +136,7 @@ const PuntosVentas = ({ ubigeosData }) => {
                             paginationRowsPerPageOptions={[50, 100, 200]}
                             highlightOnHover
                             pointerOnHover
-                        />
+                            expandableRows expandableRowsComponent={ExpandedComponent} />
                     </Col>
                 </Row>
             </Container>
@@ -124,7 +146,8 @@ const PuntosVentas = ({ ubigeosData }) => {
                         {{
                             "editar": "Actualizar Empresa",
                             "eliminar": "Eliminar Punto de Venta",
-                            "insertar": "Insertar Punto de Venta"
+                            "insertar": "Insertar Punto de Venta",
+                            "eliminarContacto": "Eliminar Contacto"
                         }[accion]}
                     </Modal.Title>
                 </Modal.Header>
@@ -132,7 +155,8 @@ const PuntosVentas = ({ ubigeosData }) => {
                     {{
                         // "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
-                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} ubigeosData={ubigeosData} />
+                        "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} ubigeosData={ubigeosData} />,
+                        "eliminarContacto": <EliminarContacto data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
                     }[accion]}
                 </Modal.Body>
             </Modal>

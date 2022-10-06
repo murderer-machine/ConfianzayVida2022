@@ -112,6 +112,6 @@ const Insertar = ({ id }) => {
     )
 }
 Insertar.defaultProps = {
-    id: 0
+    id: null
 }
 export default Insertar
