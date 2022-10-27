@@ -13,6 +13,7 @@ import { RiContactsLine } from 'react-icons/ri'
 import { MdOutlinePhoneIphone } from 'react-icons/md'
 import { MdOutlineMail } from 'react-icons/md'
 import EliminarContacto from "./eliminarContacto"
+import InsertarContacto from "./insertarContactos"
 const PuntosVentas = ({ ubigeosData }) => {
     const [puntosVentas, setPuntosVentas] = useState([])
     const [busqueda, setBusqueda] = useState('')
@@ -68,6 +69,11 @@ const PuntosVentas = ({ ubigeosData }) => {
             wrap: true,
         },
         {
+            name: 'Agregar Contacto',
+            selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalAcciones('insertarContacto',row.id) }}><ImPencil /></Button>,
+            width: '9%',
+        },
+        {
             name: 'Editar',
             selector: row => <Button variant="contained" color="secondary" size="small" onClick={() => { handleShowModalAcciones('editar', row) }}><ImPencil /></Button>,
             width: '9%',
@@ -89,6 +95,7 @@ const PuntosVentas = ({ ubigeosData }) => {
     }
     const handleCloseModalAcciones = () => {
         setModalAcciones(false)
+        setActualizar(!actualizar)
     }
     const actualizarFn = () => {
         setActualizar(!actualizar)
@@ -147,7 +154,8 @@ const PuntosVentas = ({ ubigeosData }) => {
                             "editar": "Actualizar Empresa",
                             "eliminar": "Eliminar Punto de Venta",
                             "insertar": "Insertar Punto de Venta",
-                            "eliminarContacto": "Eliminar Contacto"
+                            "eliminarContacto": "Eliminar Contacto",
+                            "ínsertarContacto": "Agregar Contacto"
                         }[accion]}
                     </Modal.Title>
                 </Modal.Header>
@@ -156,7 +164,8 @@ const PuntosVentas = ({ ubigeosData }) => {
                         // "editar": <Actualizar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} empresasData={empresasData} ramosData={ramosData} />,
                         "eliminar": <Eliminar data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
                         "insertar": <Insertar cerrar={handleCloseModalAcciones} actualizar={actualizarFn} ubigeosData={ubigeosData} />,
-                        "eliminarContacto": <EliminarContacto data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
+                        "eliminarContacto": <EliminarContacto data={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />,
+                        "insertarContacto": <InsertarContacto id={dataAccion} cerrar={handleCloseModalAcciones} actualizar={actualizarFn} />
                     }[accion]}
                 </Modal.Body>
             </Modal>

@@ -27,7 +27,7 @@ const Eliminar = ({ data, cerrar, actualizar }) => {
             <Container>
                 <Row>
                     <Col xs={12}>
-                        ¿Esta seguro que desea el PV de <b>{data.nombres.toUpperCase()} {data.apellidos.toUpperCase()}</b>?
+                        ¿Esta seguro que desea eliminar el PV de <b>{data.abreviatura.toUpperCase()} </b>?
                     </Col>
                     <Col xs={12} lg={12}>
                         {Object.keys(response).length > 0 && !response.response ? (<>

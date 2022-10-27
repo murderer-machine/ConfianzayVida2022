@@ -1,0 +1,11 @@
+@import "./variables.scss";
+.background{
+    background-color: #fff;
+    & h4 {
+        color: $color_principal;
+    }
+}
+.tamano{
+    width: 100vw;
+    height: 100vh;
+}
