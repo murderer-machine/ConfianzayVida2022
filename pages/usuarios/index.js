@@ -11,6 +11,7 @@ import DataTable from 'react-data-table-component'
 import AgregarUsuario from './agregarUsuario'
 
 import { styleButton } from '../../styles/globals'
+import cookies from 'js-cookie'
 
 const Usuarios = () => {
     /**
@@ -221,7 +222,7 @@ const Usuarios = () => {
     return (
         <>
             <Container>
-
+                <h1>{cookies.get('token')}</h1>
                 <Row style={{ backgroundColor: '#fff' }} className="my-2 p-2">
                     <Col xs={12} lg={12}>
                         <Button className="mb-2" variant="contained" color="primary" onClick={handleShowModalAgregarUsuario} ><MdOutlineAddCircle /></Button>
@@ -341,7 +342,6 @@ const Usuarios = () => {
                                     aria-hidden="true"
                                 />
                             </>) : (<></>)} {' '}Guardar</Button>,
-
                     }[accion]}
                 </Modal.Footer>
             </Modal>

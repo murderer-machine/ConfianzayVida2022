@@ -6,7 +6,9 @@ import { styleButton } from '../styles/globals'
 import { TextField, Button, Alert } from '@mui/material'
 import styles from '../styles/Inicio.module.scss'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 const Index = () => {
+    const router = useRouter()
     const [inputs, setInputs] = useState({
         nroDoc: '',
         password: '',
@@ -37,6 +39,10 @@ const Index = () => {
                 }
             })
         const data = await response.json()
+        if (data.response) {
+            router.push('usuarios')
+            cookies.set("token", data.token)
+        }
         setSpinner(false)
         setResponse(data)
     }
@@ -65,16 +71,17 @@ const Index = () => {
                         <TextField className="mb-2" id="outlined-basic" name="nroDoc" label="Nro de Documento" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.nroDoc || ""} sx={styleButton} />
                         <TextField type="password" className="mb-2" id="outlined-basic" name="password" label="password" variant="outlined" size="small" fullWidth onChange={handleChange} value={inputs.password || ""} sx={styleButton} />
                         <Button variant="contained" color="primary" size="small" onClick={login} disabled={spinner ? true : false}>
-                            {!spinner ? (<>
+                            {spinner ? (<>
                                 <Spinner
                                     as="span"
                                     animation="border"
                                     size="sm"
                                     role="status"
                                     aria-hidden="true"
+                                    style={{ marginRight: '5px' }}
                                 />
                             </>) : (<></>)}
-                            <div className='mr-2'>Ingresar</div>
+                            Ingresar
                         </Button>
                         <Alert severity={response.response ? 'success' : 'error'}>
                             {response.message}
@@ -82,10 +89,20 @@ const Index = () => {
                         {JSON.stringify(inputs)}
                         {JSON.stringify(response)}
                     </Col>
-
                 </Row>
             </Container>
         </>
     )
+}
+export async function getServerSideProps({ req }) {
+    const token = req.cookies.token ? req.cookies.token : ''
+    const response = await fetch(`${process.env.URL}/api/usuarios/verificar/${token}`)
+    const data = await response.json()
+    return {
+        redirect: {
+            destination: !data.response ? '/usuarios' : '/',
+            permanent: false,
+        },
+    }
 }
 export default Index
